@@ -1,61 +1,32 @@
 <template>
-  <div class="dark-theme add-car">
-    <h1>Tambah Mobil Baru</h1>
-    <form @submit.prevent="addCar">
-      <div>
-        <label for="make">Merk</label>
-        <input type="text" id="make" v-model="make" required />
-      </div>
-      <div>
-        <label for="model">Model</label>
-        <input type="text" id="model" v-model="model" required />
-      </div>
-      <div>
-        <label for="year">Tahun</label>
-        <input type="number" id="year" v-model="year" required />
-      </div>
-      <div>
-        <label for="rentalPricePerDay">Harga Sewa per Hari</label>
-        <input type="number" id="rentalPricePerDay" v-model="rentalPricePerDay" required />
-      </div>
-      <div>
-        <label for="imageURL">URL Gambar</label>
-        <input type="text" id="imageURL" v-model="imageURL" required />
-      </div>
-      <button type="submit">Tambah Mobil</button>
+  <div class="login">
+    <h2>Login</h2>
+    <form @submit.prevent="login">
+      <label>Email:</label>
+      <input type="email" v-model="email" required>
+      <label>Password:</label>
+      <input type="password" v-model="password" required>
+      <button type="submit">Login</button>
     </form>
   </div>
 </template>
 
 <script>
-import { firestore } from '~/plugins/firebase.js';
-
 export default {
   data() {
     return {
-      make: '',
-      model: '',
-      year: '',
-      rentalPricePerDay: '',
-      imageURL: ''
+      email: '',
+      password: ''
     };
   },
   methods: {
-    async addCar() {
-      const newCar = {
-        make: this.make,
-        model: this.model,
-        year: this.year,
-        rentalPricePerDay: this.rentalPricePerDay,
-        availability: true,
-        imageURL: this.imageURL
-      };
-
+    async login() {
       try {
-        await firestore.collection('cars').add(newCar);
-        this.$router.push('/cars');
+        await this.$fire.auth.signInWithEmailAndPassword(this.email, this.password);
+        console.log('Logged in successfully');
+        this.$router.push('/');
       } catch (error) {
-        console.error('Error adding car: ', error);
+        console.error('Error logging in:', error);
       }
     }
   }
@@ -63,38 +34,41 @@ export default {
 </script>
 
 <style scoped>
-.dark-theme.add-car {
-  background-color: #121212;
-  color: #e0e0e0;
-  max-width: 600px;
+.login {
+  max-width: 400px;
   margin: 0 auto;
   padding: 20px;
-  border: 1px solid #333;
-  border-radius: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #222;
+  color: #fff;
 }
-h1 {
+.login h2 {
   text-align: center;
-  margin-bottom: 20px;
+  color: #fff;
 }
 form {
   display: flex;
   flex-direction: column;
 }
-form div {
-  margin-bottom: 10px;
+label {
+  margin-bottom: 0.5em;
+  color: #fff;
 }
-form label {
-  margin-bottom: 5px;
-}
-form input {
-  padding: 10px;
-  border: 1px solid #333;
+input[type="email"],
+input[type="password"],
+button {
+  padding: 0.5em;
+  margin-bottom: 1em;
   border-radius: 5px;
-  background-color: #1f1f1f;
-  color: #e0e0e0;
+}
+input[type="email"],
+input[type="password"] {
+  background-color: #333;
+  border: 1px solid #555;
+  color: #fff;
 }
 button {
-  padding: 10px;
   background-color: #007BFF;
   color: #fff;
   border: none;

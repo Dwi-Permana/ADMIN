@@ -1,59 +1,44 @@
 <template>
-  <div class="dark-theme register">
-    <h1>Daftar</h1>
+  <div class="register">
+    <h2>Register</h2>
     <form @submit.prevent="register">
-      <div>
-        <label for="name">Nama</label>
-        <input type="text" id="name" v-model="name" required />
-      </div>
-      <div>
-        <label for="email">Email</label>
-        <input type="email" id="email" v-model="email" required />
-      </div>
-      <div>
-        <label for="password">Password</label>
-        <input type="password" id="password" v-model="password" required />
-      </div>
-      <div>
-        <label for="phoneNumber">Nomor Telepon</label>
-        <input type="tel" id="phoneNumber" v-model="phoneNumber" required />
-      </div>
-      <button type="submit">Daftar</button>
+      <label>Name:</label>
+      <input type="text" v-model="name" required>
+      <label>Email:</label>
+      <input type="email" v-model="email" required>
+      <label>Password:</label>
+      <input type="password" v-model="password" required>
+      <label>Phone Number:</label>
+      <input type="tel" v-model="phoneNumber" required>
+      <button type="submit">Register</button>
     </form>
-    <p v-if="error">{{ error }}</p>
   </div>
 </template>
 
 <script>
-import { auth, firestore } from '~/plugins/firebase.js';
-
 export default {
   data() {
     return {
       name: '',
       email: '',
       password: '',
-      phoneNumber: '',
-      error: ''
+      phoneNumber: ''
     };
   },
   methods: {
     async register() {
       try {
-        const userCredential = await auth.createUserWithEmailAndPassword(this.email, this.password);
-        const user = userCredential.user;
-
-        await firestore.collection('users').doc(user.uid).set({
-          uid: user.uid,
+        const userCredential = await this.$fire.auth.createUserWithEmailAndPassword(this.email, this.password);
+        console.log('Registered successfully:', userCredential.user);
+        // Example: Save additional user details to Firestore
+        await this.$fire.firestore.collection('users').doc(userCredential.user.uid).set({
           name: this.name,
           email: this.email,
-          phoneNumber: this.phoneNumber,
-          role: 'customer'
+          phoneNumber: this.phoneNumber
         });
-
         this.$router.push('/');
       } catch (error) {
-        this.error = error.message;
+        console.error('Error registering:', error);
       }
     }
   }
@@ -61,38 +46,45 @@ export default {
 </script>
 
 <style scoped>
-.dark-theme.register {
-  background-color: #121212;
-  color: #e0e0e0;
+.register {
   max-width: 400px;
   margin: 0 auto;
   padding: 20px;
-  border: 1px solid #333;
-  border-radius: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #222;
+  color: #fff;
 }
-h1 {
+.register h2 {
   text-align: center;
-  margin-bottom: 20px;
+  color: #fff;
 }
 form {
   display: flex;
   flex-direction: column;
 }
-form div {
-  margin-bottom: 10px;
+label {
+  margin-bottom: 0.5em;
+  color: #fff;
 }
-form label {
-  margin-bottom: 5px;
-}
-form input {
-  padding: 10px;
-  border: 1px solid #333;
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+button {
+  padding: 0.5em;
+  margin-bottom: 1em;
   border-radius: 5px;
-  background-color: #1f1f1f;
-  color: #e0e0e0;
+}
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"] {
+  background-color: #333;
+  border: 1px solid #555;
+  color: #fff;
 }
 button {
-  padding: 10px;
   background-color: #007BFF;
   color: #fff;
   border: none;
@@ -101,9 +93,5 @@ button {
 }
 button:hover {
   background-color: #0056b3;
-}
-p {
-  color: red;
-  text-align: center;
 }
 </style>
