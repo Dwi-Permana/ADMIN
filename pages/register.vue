@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+
 export default {
   data() {
     return {
@@ -28,14 +30,18 @@ export default {
   methods: {
     async register() {
       try {
-        const userCredential = await this.$fire.auth.createUserWithEmailAndPassword(this.email, this.password);
-        console.log('Registered successfully:', userCredential.user);
-        // Example: Save additional user details to Firestore
-        await this.$fire.firestore.collection('users').doc(userCredential.user.uid).set({
+        const auth = getAuth();
+        const { user } = await createUserWithEmailAndPassword(auth, this.email, this.password);
+
+        // Akses firestore melalui $firestore yang telah diberikan oleh plugin Firebase.js
+        await this.$firestore.collection('users').doc(user.uid).set({
           name: this.name,
           email: this.email,
           phoneNumber: this.phoneNumber
         });
+
+        console.log('Registered successfully:', user);
+
         this.$router.push('/');
       } catch (error) {
         console.error('Error registering:', error);

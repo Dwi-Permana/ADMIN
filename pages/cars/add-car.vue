@@ -13,13 +13,14 @@
       <label>Image URL:</label>
       <input type="text" v-model="imageURL" required>
       <button type="submit">Add Car</button>
-      <!-- Contoh penggunaan NuxtLink -->
       <NuxtLink to="/cars">Back to Cars</NuxtLink>
     </form>
   </div>
 </template>
 
 <script>
+import { collection, addDoc } from 'firebase/firestore';
+
 export default {
   data() {
     return {
@@ -33,9 +34,14 @@ export default {
   methods: {
     async addCar() {
       try {
-        // Logika untuk menambahkan mobil ke database
-        console.log('Adding car:', this.make, this.model, this.year, this.rentalPricePerDay, this.imageURL);
-        // Contoh: Redirect setelah menambahkan mobil
+        const docRef = await addDoc(collection(this.$firestore, "cars"), {
+          make: this.make,
+          model: this.model,
+          year: this.year,
+          rentalPricePerDay: this.rentalPricePerDay,
+          imageURL: this.imageURL
+        });
+        console.log('Car added with ID: ', docRef.id);
         this.$router.push('/cars');
       } catch (error) {
         console.error('Error adding car:', error);

@@ -12,6 +12,8 @@
 </template>
 
 <script>
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+
 export default {
   data() {
     return {
@@ -22,8 +24,10 @@ export default {
   methods: {
     async login() {
       try {
-        await this.$fire.auth.signInWithEmailAndPassword(this.email, this.password);
-        console.log('Logged in successfully');
+        const auth = getAuth();
+        await signInWithEmailAndPassword(auth, this.email, this.password);
+
+        console.log('Login successful');
         this.$router.push('/');
       } catch (error) {
         console.error('Error logging in:', error);

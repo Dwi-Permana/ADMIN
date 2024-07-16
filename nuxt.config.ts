@@ -18,7 +18,7 @@ export default {
     ]
   },
   plugins: [
-    { src: '~/plugins/firebase', mode: 'client' },
+    '~/plugins/firebase'
   ],
   css: [
     '~/assets/styles/global.css'

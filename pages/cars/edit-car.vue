@@ -14,8 +14,6 @@
       <input type="text" v-model="imageURL" required>
       <button type="submit">Update Car</button>
     </form>
-  </
-</form>
   </div>
 </template>
 
@@ -33,17 +31,15 @@ export default {
   methods: {
     async updateCar() {
       try {
-        // Implement logic to update car in database
-        await this.$fire.firestore.collection('cars').doc(this.$route.params.id).update({
+        await this.$nuxtApp.$firestore.collection('cars').doc(this.$route.params.id).update({
           make: this.make,
           model: this.model,
-          year: this.year,
+          year: parseInt(this.year, 10),
           rentalPricePerDay: parseFloat(this.rentalPricePerDay),
           imageURL: this.imageURL
         });
         console.log('Car updated successfully');
-        // Redirect after updating car
-        this.$router.push('/cars');
+        await this.$router.push('/cars');
       } catch (error) {
         console.error('Error updating car:', error);
       }
@@ -51,7 +47,7 @@ export default {
   },
   async created() {
     try {
-      const doc = await this.$fire.firestore.collection('cars').doc(this.$route.params.id).get();
+      const doc = await this.$nuxtApp.$firestore.collection('cars').doc(this.$route.params.id).get();
       if (doc.exists) {
         const car = doc.data();
         this.make = car.make;
